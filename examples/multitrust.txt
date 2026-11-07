@@ -1,0 +1,5 @@
+MultiTrust: privacy-safe sharing of sensitive tabular data (e.g. hospital patient records) for research.
+Problem: hospitals hold data researchers need, but it's personal. Removing only names still lets people be re-identified via birth date + ZIP; removing too much makes the data useless.
+How it works: 1) Detect: finds risky quasi-identifier columns (an LLM can only add, never remove, flagged columns). 2) Transform: generalises data so every person hides among at least five look-alikes (k >= 5). 3) Attack: runs re-identification attacks against its own output; both tests passed. Two people sign off before release.
+Results: privacy score 0.17 -> 1.00, utility kept at 0.98.
+Tagline: Protect the data, keep its value.

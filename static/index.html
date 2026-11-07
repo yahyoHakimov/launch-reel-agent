@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Launch Reel Agent</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,600;9..40,700&family=DM+Serif+Display:ital@1&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #F6F2EA; --card: #FFFDF8; --ink: #1B2430; --muted: #6B6F76; --line: #E4DDD0;
+    --accent: #2F6BFF; --teal: #18A999; --warn: #E0A100; --bad: #D0533A;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font: 16px/1.5 "DM Sans", system-ui, sans-serif; }
+  main { max-width: 1080px; margin: 0 auto; padding: 40px 16px 80px; }
+  header h1 { font-size: 44px; line-height: 1.05; margin: 0 0 8px; letter-spacing: -0.02em; }
+  header h1 em { font-family: "DM Serif Display", serif; font-weight: 400; color: var(--accent); }
+  header p { color: var(--muted); margin: 0 0 8px; max-width: 640px; }
+  .flow { display: flex; gap: 6px; flex-wrap: wrap; margin: 16px 0 32px; font: 500 12px "JetBrains Mono", monospace; }
+  .flow span { padding: 4px 10px; border-radius: 999px; background: var(--card); border: 1px solid var(--line); }
+  section { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 24px; margin-bottom: 20px; }
+  section.off { opacity: .45; pointer-events: none; }
+  h2 { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 0 0 14px; }
+  textarea, input { width: 100%; font: inherit; color: inherit; background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+  textarea { min-height: 140px; resize: vertical; }
+  textarea:focus, input:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+  .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 12px; }
+  button { font: 600 15px "DM Sans", sans-serif; border: 0; border-radius: 999px; padding: 11px 20px; cursor: pointer; background: var(--ink); color: #fff; }
+  button.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); padding: 7px 14px; font-size: 13px; }
+  button:disabled { opacity: .5; cursor: wait; }
+  .hint { color: var(--muted); font-size: 14px; }
+  .brand { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; margin-bottom: 16px; }
+  .brand b { font-size: 22px; }
+  .sw { width: 22px; height: 22px; border-radius: 6px; border: 1px solid rgba(0,0,0,.1); display: inline-block; }
+  .acts { display: grid; gap: 14px; }
+  .act h3 { margin: 0 0 8px; font: 500 12px "JetBrains Mono", monospace; text-transform: uppercase; color: var(--muted); }
+  .scenes { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; }
+  .scene { border: 1px solid var(--line); border-radius: 12px; padding: 10px; background: #fff; display: grid; gap: 6px; }
+  .scene .n { font: 500 11px "JetBrains Mono", monospace; color: var(--muted); }
+  .scene input { padding: 6px 8px; font-weight: 700; }
+  .scene input.emph { font-family: "DM Serif Display", serif; font-style: italic; font-weight: 400; color: var(--accent); }
+  .scene small { color: var(--muted); font-size: 13px; line-height: 1.35; }
+  .steps { list-style: none; padding: 0; margin: 0 0 16px; display: grid; gap: 6px; }
+  .steps li { display: flex; gap: 10px; align-items: center; color: var(--muted); }
+  .steps li.on { color: var(--ink); font-weight: 600; }
+  .steps li.ok { color: var(--teal); }
+  .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--line); flex: none; }
+  .on .dot { background: var(--accent); animation: pulse 1s infinite; }
+  .ok .dot { background: var(--teal); }
+  @keyframes pulse { 50% { opacity: .3; } }
+  .frames { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+  .frame { position: relative; aspect-ratio: 16/9; border-radius: 8px; overflow: hidden; background: var(--paper); }
+  .frame img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .score { position: absolute; top: 6px; right: 6px; font: 500 11px "JetBrains Mono", monospace; padding: 2px 7px; border-radius: 999px; background: #fff; }
+  .score.hi { color: var(--teal); } .score.mid { color: var(--warn); } .score.lo { color: var(--bad); }
+  .log { margin-top: 14px; max-height: 180px; overflow: auto; font: 12px/1.5 "JetBrains Mono", monospace; color: var(--muted); background: var(--paper); border-radius: 10px; padding: 10px 12px; white-space: pre-wrap; }
+  video { width: 100%; border-radius: 12px; background: #000; display: block; }
+  .err { color: var(--bad); font-weight: 600; }
+  @media (max-width: 640px) {
+    header h1 { font-size: 32px; }
+    .frames { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Pitch in. <em>Launch reel</em> out.</h1>
+    <p>An agent pipeline: Claude writes a problem → solution → proof story, Pruna paints and animates every scene, a Claude critic sends weak shots back, and everything is cut on the beat.</p>
+    <div class="flow"><span>1 · Claude story</span><span>2 · Pruna p-image</span><span>3 · Claude critic</span><span>4 · Pruna p-video-2 + critic</span><span>5 · beat-synced compose</span></div>
+  </header>
+
+  <section id="s-pitch">
+    <h2>1 · Your product</h2>
+    <textarea id="pitch" placeholder="What does it do, what problem does it solve, how does it work, and one real number if you have it."></textarea>
+    <div class="row">
+      <button id="btn-outline">Write the story</button>
+      <span class="hint" id="examples"></span>
+    </div>
+  </section>
+
+  <section id="s-outline" class="off">
+    <h2>2 · Story — edit anything, then approve</h2>
+    <div id="outline"></div>
+    <div class="row">
+      <button id="btn-render">Approve &amp; make the reel</button>
+      <span class="hint">About 5 minutes. Pruna keyframes in seconds, then clips.</span>
+    </div>
+  </section>
+
+  <section id="s-progress" class="off">
+    <h2>3 · Agents at work</h2>
+    <ul class="steps" id="steps"></ul>
+    <div class="frames" id="frames"></div>
+    <div class="log" id="log"></div>
+  </section>
+
+  <section id="s-video" class="off">
+    <h2>4 · Your reel</h2>
+    <video id="video" controls playsinline></video>
+  </section>
+</main>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const STEPS = ["Claude: story & brand kit", "Pruna p-image: keyframes", "Claude critic: keyframes",
+               "Pruna p-video-2 + critic: clips", "Compose: cut, type, music"];
+let outline = null;
+const save = () => { try { localStorage.setItem("reel-outline", JSON.stringify(outline)); } catch (e) {} };
+
+function enable(id) { $(id).classList.remove("off"); $(id).scrollIntoView({ behavior: "smooth", block: "start" }); }
+function setStep(n) {
+  $("steps").innerHTML = STEPS.map((s, i) =>
+    `<li class="${i + 1 < n ? "ok" : i + 1 === n ? "on" : ""}"><span class="dot"></span>${s}</li>`).join("");
+}
+function esc(s) { return String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
+function log(t) { $("log").textContent += t + "\n"; $("log").scrollTop = 1e9; }
+
+fetch("/api/examples").then(r => r.json()).then(ex => {
+  $("examples").innerHTML = "Try: " + Object.keys(ex).map(k => `<button class="ghost" data-k="${esc(k)}">${esc(k)}</button>`).join(" ");
+  $("examples").querySelectorAll("button").forEach(b => b.onclick = () => { $("pitch").value = ex[b.dataset.k]; });
+});
+
+$("btn-outline").onclick = async () => {
+  const b = $("btn-outline"); b.disabled = true; b.textContent = "Claude is writing…";
+  try {
+    const r = await fetch("/api/outline", { method: "POST", headers: { "Content-Type": "application/json" },
+                                            body: JSON.stringify({ pitch: $("pitch").value }) });
+    if (!r.ok) throw new Error((await r.json()).detail || r.statusText);
+    outline = await r.json();
+    save(); renderOutline(); enable("s-outline");
+  } catch (e) { alert(e.message); }
+  b.disabled = false; b.textContent = "Write the story";
+};
+
+function renderOutline() {
+  const br = outline.brand;
+  let html = `<div class="brand"><b>${esc(br.product_name)}</b>${br.palette.map(c => `<span class="sw" style="background:${esc(c)}" title="${esc(c)}"></span>`).join("")}<span class="hint">${esc(br.tone)}</span></div><div class="acts">`;
+  for (const act of ["problem", "solution", "proof"]) {
+    html += `<div class="act"><h3>${act}</h3><div class="scenes">`;
+    outline.scenes.forEach((s, i) => {
+      if (s.act !== act) return;
+      html += `<div class="scene"><span class="n">${String(i + 1).padStart(2, "0")} · ${s.seconds}s</span>
+        <input data-i="${i}" data-f="title" value="${esc(s.title)}">
+        <input class="emph" data-i="${i}" data-f="emphasis" value="${esc(s.emphasis)}">
+        <small>${esc(s.on_screen)}</small></div>`;
+    });
+    html += `</div></div>`;
+  }
+  $("outline").innerHTML = html + "</div>";
+  $("outline").querySelectorAll("input").forEach(inp =>
+    inp.oninput = () => { outline.scenes[inp.dataset.i][inp.dataset.f] = inp.value; save(); });
+}
+
+// restore the last story after a reload (per-browser convenience only)
+try {
+  const saved = JSON.parse(localStorage.getItem("reel-outline") || localStorage.getItem("tidewater-outline"));
+  if (saved && saved.scenes) { outline = saved; renderOutline(); $("s-outline").classList.remove("off"); }
+} catch (e) {}
+
+function showFrames(urls, scores) {
+  $("frames").innerHTML = urls.map((u, i) => {
+    const s = scores && scores[i];
+    const cls = s >= 7 ? "hi" : s >= 5 ? "mid" : "lo";
+    return `<div class="frame"><img src="${esc(u)}" alt="Scene ${i + 1} keyframe">${s ? `<span class="score ${cls}">${s}/10</span>` : ""}</div>`;
+  }).join("");
+}
+
+$("btn-render").onclick = async () => {
+  const b = $("btn-render"); b.disabled = true;
+  $("log").textContent = ""; $("frames").innerHTML = ""; setStep(2); enable("s-progress");
+  const r = await fetch("/api/render", { method: "POST", headers: { "Content-Type": "application/json" },
+                                         body: JSON.stringify({ outline }) });
+  if (!r.ok) { log((await r.json()).detail); b.disabled = false; return; }
+  const { job } = await r.json();
+  const es = new EventSource(`/api/jobs/${job}/events`);
+  es.onmessage = (m) => {
+    const ev = JSON.parse(m.data);
+    if (ev.kind === "step") { setStep(ev.n); log(`[${ev.t}s] ${ev.text}`); }
+    if (ev.kind === "log") log(ev.text);
+    if (ev.kind === "frames") showFrames(ev.urls, ev.scores);
+    if (ev.kind === "done") {
+      setStep(6); es.close(); b.disabled = false;
+      $("video").src = ev.url; enable("s-video"); $("video").play().catch(() => {});
+    }
+    if (ev.kind === "error") { log("ERROR: " + ev.text); es.close(); b.disabled = false; }
+  };
+  es.onerror = () => { es.close(); b.disabled = false; };
+};
+</script>
+</body>
+</html>

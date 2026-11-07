@@ -1,0 +1,5 @@
+Tidewater: a small sensor + app that tells coastal homeowners when their basement is about to flood.
+Problem: basement floods start silently; people find out when the boiler is already under water, and insurance claims average weeks of hassle.
+How it works: 1) A puck-sized sensor sits on the basement floor and measures moisture and water level. 2) The app combines it with local tide and rain forecasts. 3) It sends an alert hours before water arrives and can switch on the sump pump automatically.
+Result: in our pilot with 40 homes, every flood event was flagged at least 3 hours in advance.
+Tagline: Know before the water does.
